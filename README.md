@@ -1,2 +1,4 @@
-# self-healing-code-pipeline-llm
-final year prj - self healing code pipeline using llm agent
+# Self-healing code pipeline using llm agent
+
+## project descriptiona self-healing code pipeline using llm agent
+this prj aims to build 
