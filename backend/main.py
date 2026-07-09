@@ -8,6 +8,12 @@ from agents.improvement_agent import suggest_improvements
 from agents.quiz_agent import generate_quiz
 
 from memory import create_database, save_error
+from memory import save_quiz_result
+from skill_tracker import analyze_skill_gaps
+from quiz_tracker import analyze_quiz_performance
+from repair_validator import validate_repair
+from memory import save_fix_history
+from memory import get_previous_fix
 from code_cleaner import clean_code
 
 create_database()
@@ -51,11 +57,21 @@ if error_info is not None:
     print(hint_result)
 
 
-    # Repair Agent
+    # Similar Fix Retrieval
+    previous_fix = get_previous_fix(
+    error_info["error_type"]
+)
+
+    if previous_fix:
+     print("\nSimilar Fix Found:")
+     print(previous_fix)
+
+
+# Repair Agent
     repair_result = repair_code(
-        sample_code,
-        error_info
-    )
+    sample_code,
+    error_info
+)
 
     # Clean LLM output
     repair_result["fixed_code"] = clean_code(
@@ -63,6 +79,19 @@ if error_info is not None:
     )
 
     print(repair_result)
+
+    save_fix_history(
+    error_info["error_type"],
+    sample_code,
+    repair_result["fixed_code"]
+)
+
+    validation_result = validate_repair(
+    repair_result["fixed_code"]
+)
+
+    print("Repair Validation Result")
+    print(validation_result)
 
 
     # Explanation Agent
@@ -87,7 +116,34 @@ if error_info is not None:
 
     print(quiz_result)
 
+    topic_map = {
+    "TypeError": "Type Conversion",
+    "IndexError": "List Indexing",
+    "NameError": "Variables and Scope",
+    "SyntaxError": "Python Syntax"
+}
+
+    topic = topic_map.get(
+    error_info["error_type"],
+    "General Python"
+)
+
+
+    answer = input(
+    "\nDid you answer the quiz correctly? (y/n): "
+)
+
+    if answer.lower() == "y":
+      save_quiz_result(topic, 1)
+    else:
+      save_quiz_result(topic, 0)
+
+    analyze_skill_gaps()
+
+    analyze_quiz_performance()
+
 
 else:
 
     print("No errors found. Code is running correctly.")
+

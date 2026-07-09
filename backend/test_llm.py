@@ -1,7 +1,5 @@
-from agents.llm_client import ask_llm
+from skill_tracker import analyze_skill_gaps
 
-prompt = "Explain why Python cannot add a string and an integer."
+report = analyze_skill_gaps()
 
-response = ask_llm(prompt)
-
-print(response)
+print(report)

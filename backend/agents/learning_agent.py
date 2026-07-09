@@ -1,4 +1,5 @@
 from agents.llm_client import ask_llm
+from memory import get_error_count
 
 
 def generate_hint(error_info):
@@ -7,18 +8,31 @@ def generate_hint(error_info):
 
     error_type = error_info["error_type"]
     message = error_info["message"]
-
+    
+    previous_count = get_error_count(
+    error_info["error_type"]
+)
     prompt = f"""
-You are a programming tutor helping a beginner developer.
+The developer has previously encountered
+{error_info["error_type"]}
+{previous_count} times.
 
-The developer made this error:
+If previous_count is greater than 3,
+explicitly mention that this is a recurring issue.
 
-Error Type: {error_type}
-Error Message: {message}
+For recurring issues:
+- provide a longer hint
+- remind the developer of the underlying concept
+- explain common situations where this mistake occurs
 
-Give a small hint that helps them think and find the solution.
-Do not give the complete fix.
-Encourage them to solve it themselves.
+Error Type:
+{error_info["error_type"]}
+
+Message:
+{error_info["message"]}
+
+Provide only a hint.
+Do not provide the full solution.
 """
 
     hint = ask_llm(prompt)
