@@ -154,3 +154,52 @@ def get_previous_fix(error_type):
         return result[0]
 
     return None
+
+def get_progress_data():
+
+    conn = sqlite3.connect("developer_memory.db")
+    cursor = conn.cursor()
+
+    # Error occurrences grouped by error_type
+    cursor.execute("""
+        SELECT error_type, COUNT(*)
+        FROM errors
+        GROUP BY error_type
+    """)
+    error_counts = dict(cursor.fetchall())
+
+    # Quiz performance grouped by topic
+    cursor.execute("""
+        SELECT topic, COUNT(*), SUM(correct)
+        FROM quiz_results
+        GROUP BY topic
+    """)
+    quiz_rows = cursor.fetchall()
+
+    # Overall summary numbers
+    cursor.execute("SELECT COUNT(*) FROM errors")
+    total_errors = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM fix_history")
+    total_fixes = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*), SUM(correct) FROM quiz_results")
+    total_attempts, total_correct = cursor.fetchone()
+    total_attempts = total_attempts or 0
+    total_correct = total_correct or 0
+
+    conn.close()
+
+    quiz_by_topic = {
+        topic: {"attempts": attempts, "correct": correct or 0}
+        for topic, attempts, correct in quiz_rows
+    }
+
+    return {
+        "error_counts": error_counts,
+        "quiz_by_topic": quiz_by_topic,
+        "total_errors": total_errors,
+        "total_fixes": total_fixes,
+        "total_quiz_attempts": total_attempts,
+        "total_quiz_correct": total_correct
+    }

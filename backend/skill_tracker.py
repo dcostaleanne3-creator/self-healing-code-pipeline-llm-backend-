@@ -1,6 +1,20 @@
 import sqlite3
 
 
+topic_map = {
+    "TypeError": "Python data types and type conversion",
+    "IndexError": "List indexing and bounds checking",
+    "NameError": "Variables and scope",
+    "SyntaxError": "Python syntax and indentation",
+    "TimeoutError": "Infinite loops and program logic",
+    "ZeroDivisionError": "Arithmetic and division safety",
+    "KeyError": "Dictionary keys and lookups",
+    "AttributeError": "Object attributes and methods",
+    "ValueError": "Data validation and type conversion",
+    "IndentationError": "Python indentation rules"
+}
+
+
 def analyze_skill_gaps():
 
     conn = sqlite3.connect("developer_memory.db")
@@ -19,13 +33,6 @@ def analyze_skill_gaps():
     conn.close()
 
     print("\nDeveloper Learning Report\n")
-
-    topic_map = {
-        "TypeError": "Python data types and type conversion",
-        "IndexError": "List indexing and bounds checking",
-        "NameError": "Variables and scope",
-        "SyntaxError": "Python syntax and indentation"
-    }
 
     for error_type, count in results:
 

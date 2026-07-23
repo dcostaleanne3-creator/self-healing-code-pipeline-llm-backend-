@@ -2,7 +2,7 @@ from agents.llm_client import ask_llm
 from memory import get_error_count
 
 
-def generate_hint(error_info):
+def generate_hint(error_info, attempts):
 
     print("Learning Agent Activated")
 
@@ -13,26 +13,24 @@ def generate_hint(error_info):
     error_info["error_type"]
 )
     prompt = f"""
-The developer has previously encountered
-{error_info["error_type"]}
-{previous_count} times.
+You are a coding tutor.
 
-If previous_count is greater than 3,
-explicitly mention that this is a recurring issue.
+Error:
+{error_info}
 
-For recurring issues:
-- provide a longer hint
-- remind the developer of the underlying concept
-- explain common situations where this mistake occurs
+Give only a short hint to help the student fix the error.
 
-Error Type:
-{error_info["error_type"]}
+Rules:
+- Maximum 20 words
+- Do not provide corrected code
+- Do not explain theory
 
-Message:
-{error_info["message"]}
+Attempt number: {attempts}
 
-Provide only a hint.
-Do not provide the full solution.
+Hint strategy:
+- Attempt 1: Give a general clue.
+- Attempt 2: Give a more specific clue.
+- Attempt 3: Give a very specific clue but do not give the solution.
 """
 
     hint = ask_llm(prompt)
